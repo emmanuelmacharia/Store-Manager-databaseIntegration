@@ -1,0 +1,17 @@
+#commands that specify the language
+
+language: python
+python: 
+- "3.6"
+- "3.6.6"
+
+
+#command that installs dependancies
+install: 
+- pip install -r requirements.txt
+- pip install .
+
+# command to run tests
+script : pytest
+
+
