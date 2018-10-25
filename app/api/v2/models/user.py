@@ -18,11 +18,11 @@ class User:
         '''takes the data input from the user and saves it into the database'''
         conn = dbconnect()
         cur = conn.cursor()
-        cur.execute("INSERT INTO users (username,email,password,role) VALUES('%s, %s, %s %s');",())
+        query = "INSERT INTO users (username,email,password,admin_role) VALUES('%s, %s, %s %s');")
+        data = (self.username, self.email, self.password, self.role)
+        cur.execute(qeury, data)
         conn.commit()
         cur.close()
-
-    def login(self, username, email, password):
 
 
     def viewall(self):
@@ -30,21 +30,25 @@ class User:
         conn= dbconnect()
         cur= conn.cursor()
         cur.execute("SELECT * FROM users;")
-        conn.commit()
-        cur.close()
+        cur.fetchall()
+
 
     def ammend(self, id):
         '''method that updates data in the database'''
         conn= dbconnect()
         cur= conn.cursor()
-        cur.execute("UPDATE users SET {} WHERE id={};".format(,self.id))
+        query = "UPDATE users SET (%s) WHERE id=(%s)"
+        data = (self.role, id)
+        cur.execute(qeury, data)
         conn.commit()
         cur.close()
 
-    def delete(self):
+    def delete(self,id):
         '''method that deletes a record from the database'''
         conn= dbconnect()
         cur= conn.cursor()
-        cur.execute("DELETE FROM users WHERE id=self.id;")
+        query = "DELETE FROM users WHERE id=(%s);"
+        data = (id,)
+        cur.execute(query,data)
         conn.commit()
         cur.close()

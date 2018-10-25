@@ -10,7 +10,7 @@ query1 = """CREATE TABLE IF NOT EXISTS users(id serial PRIMARY KEY NOT NULL,
                                             username text NOT NULL ,
                                             email text NOT NULL,
                                             password text NOT NULL,
-                                            role text NOT NULL);"""
+                                            admin_role bool NOT NULL);"""
 
 
 query2 = """CREATE TABLE IF NOT EXISTS products(id serial PRIMARY KEY NOT NULL,

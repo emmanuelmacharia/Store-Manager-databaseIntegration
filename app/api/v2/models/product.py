@@ -19,7 +19,9 @@ class Products:
         '''takes the data input from the user and saves it into the database'''
         conn= dbconnect()
         cur= conn.cursor()
-        cur.execute("INSERT INTO products (id,productname,description, category, quantity, price) VALUES('%d, %s, %s, %s, %d,%d');")
+        query = "INSERT INTO products (id,productname,description, category, quantity, price) VALUES(%s, %s, %s, %s, %s,%s);"
+        data = (self.id, self.productname, self.description, self.category, self.quantity, self.price)
+        cur.execute(query, data)
         conn.commit()
         cur.close()
 
@@ -28,22 +30,24 @@ class Products:
         conn= dbconnect()
         cur= conn.cursor()
         cur.execute("SELECT * FROM products;")
-        conn.commit()
         cur.close()
 
     def viewone(self):
         '''queries the database to view one product'''
         conn= dbconnect()
         cur= conn.cursor()
-        cur.execute("SELECT * FROM products WHERE id=self.id")
-        conn.commit()
+        query = "SELECT * FROM products WHERE id=(%s)"
+        data = (self.id,)
+        cur.execute(query,data)
         cur.close()
 
     def ammend(self):
+        '''method that updates product data in the database'''
         conn= dbconnect()
         cur= conn.cursor()
-        '''method that updates product data in the database'''
-        cur.execute("UPDATE products SET '%S' WHERE id=self.id;")
+        query = "UPDATE products SET (%s) WHERE id=(%s);"
+        data = (quantity += self.quantity, self.id)
+        cur.execute(query, data)
         conn.commit()
         cur.close()
 
@@ -52,6 +56,8 @@ class Products:
         conn= dbconnect()
         cur= conn.cursor()
         '''method that deletes a record from the database'''
-        cur.execute("DELETE FROM products WHERE id=self.id CASCADE;")
+        query = "DELETE FROM products WHERE id=(%s) CASCADE;"
+        data = (self.id,)
+        cur.execute(query, data)
         conn.commit()
         cur.close()
