@@ -30,6 +30,7 @@ class Products:
         conn= dbconnect()
         cur= conn.cursor()
         cur.execute("SELECT * FROM products;")
+        cur.fetchall()
         cur.close()
 
     def viewone(self):
@@ -52,7 +53,7 @@ class Products:
         cur.close()
 
 
-    def delete(self):
+    def delete(self, id):
         conn= dbconnect()
         cur= conn.cursor()
         '''method that deletes a record from the database'''

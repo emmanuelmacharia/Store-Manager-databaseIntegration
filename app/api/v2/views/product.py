@@ -15,7 +15,16 @@ class Product(Resource):
         pass
     def put(self):
         pass
+
     def get(self):
-        pass
+        return Products.viewall()
+
     def delete(self):
-        pass
+        data = request.get_json()
+        id = data['id']
+
+        if isinstance(id) == False:
+            return {'message':'id can only be an integer'}, 400
+        else:
+            result = Products()
+            result.delete(id)

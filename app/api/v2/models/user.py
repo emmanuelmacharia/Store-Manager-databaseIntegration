@@ -31,6 +31,7 @@ class User:
         cur= conn.cursor()
         cur.execute("SELECT * FROM users;")
         cur.fetchall()
+        cur.close()
 
 
     def ammend(self, id):
