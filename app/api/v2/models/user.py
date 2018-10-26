@@ -5,7 +5,7 @@
 import json
 from passlib.hash import pbkdf2_sha256 as sha256
 from flask import Flask, jsonify, request
-from .__init__ import dbconnect, createTables
+from .__init__ import dbconnect;
 
 
 
@@ -15,8 +15,8 @@ class User:
         '''takes the data input from the user and saves it into the database'''
         conn = dbconnect()
         cur = conn.cursor()
-        query = "INSERT INTO users (username,email,password,admin_role) VALUES('%s, %s, %s %s');"
-        data = (username,email,password,admin_role)
+        query = "INSERT INTO users (username,email,hash,admin_role) VALUES('%s, %s, %s %s');"
+        data = (username,email,hash,admin_role)
         cur.execute(qeury, data)
         conn.commit()
         cur.close()

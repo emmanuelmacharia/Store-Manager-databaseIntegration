@@ -1,18 +1,7 @@
 
 import psycopg2
 from .database import queries
-# DATABASE_URL ="dbname='StoreManager' host='localhost' port=5432 user='postgres' password='Permafrost'"
-#
-# conn = psycopg2.connect(DATABASE_URL)
-#
-# print(conn)
-# cur = conn.cursor()
-#
-# def connect():
-#     pass
-#
-# def disconnect():
-#     pass
+
 
 def dbconnect():
     '''connects to the databse'''

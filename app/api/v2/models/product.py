@@ -5,14 +5,13 @@ from .__init__ import dbconnect, createTables
 
 
 
-class Products:
+class Product:
 
     def save(productname,description, category, quantity, price):
         '''takes the data input from the user and saves it into the database'''
         conn= dbconnect()
         cur= conn.cursor()
-        selected = cur.execute("SELECT * FROM products WHERE id=(%s)"(id))
-
+        # selected = cur.execute("SELECT * FROM products WHERE id=(%s)"(id))
         query = "INSERT INTO products (productname,description, category, quantity, price) VALUES(%s, %s, %s, %s, %s,%s);"
         data = (productname, description,category, quantity, price)
         cur.execute(query, data)
@@ -34,6 +33,7 @@ class Products:
         query = "SELECT * FROM products WHERE id=(%s)"
         data = (id,)
         cur.execute(query,data)
+        cur.fetchone()
         cur.close()
 
     def ammend( productname,description, category, price):

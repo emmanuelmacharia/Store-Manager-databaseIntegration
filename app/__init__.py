@@ -37,10 +37,8 @@ def create_app(config_name):
     api.add_resource(Login, '/login')
 
     #ENDPOINTS FOR V2
-    database.add_resource(User, '/auth/signup')
-
+    database.add_resource(Users, '/auth/signup')
     database.add_resource(Products, '/products')
-
     database.add_resource(Sales, '/sales')
 
     app.register_blueprint(v1)
