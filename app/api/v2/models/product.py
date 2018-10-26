@@ -1,8 +1,7 @@
 '''Handles all the product queries from the database'''
 
 import json
-from database import ProductsTable
-from __init__ import dbconnect, createTables
+from .__init__ import dbconnect, createTables
 
 
 
@@ -42,16 +41,25 @@ class Products:
         cur.execute(query,data)
         cur.close()
 
-    def ammend(self):
+    def ammend(self, productname,description, category, price):
         '''method that updates product data in the database'''
         conn= dbconnect()
         cur= conn.cursor()
-        query = "UPDATE products SET (%s) WHERE id=(%s);"
-        data = (quantity += self.quantity, self.id)
+        query = "UPDATE products SET (productname,description, category, price) WHERE id=(%s);"
+        data = (self.productname, self.description, self.category, self.price)
         cur.execute(query, data)
         conn.commit()
         cur.close()
 
+    def modifyquantity(self, quantity):
+        conn = dbconnect()
+        cur = conn.cursor()
+        query = "UPDATE products SET (quantity) WHERE id=(%s);"
+        quantity += self.quantity
+        data = (quantity, self.id)
+        cur.execute(query, data)
+        conn.commit()
+        cur.close()
 
     def delete(self, id):
         conn= dbconnect()

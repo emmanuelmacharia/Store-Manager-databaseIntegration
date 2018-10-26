@@ -4,6 +4,10 @@ from flask_restful import Api, Resource
 from app.api.v1.views import AdminProducts, AttendantProducts, AttendantSales, AdminSale, Sale, Product, Register, Login
 from flask_jwt_extended import JWTManager
 from app.api.v2.models import dbconnect, createTables
+from app.api.v2.views.product import Products
+from app.api.v2.views.user import User
+from app.api.v2.views.sale import Sales
+
 
 
 v1 = Blueprint('v1',__name__,url_prefix='/api/v1')
@@ -32,4 +36,9 @@ def create_app(config_name):
     api.add_resource(Product, '/products/<int:id>')
     api.add_resource(Register, '/register')
     api.add_resource(Login, '/login')
+
+    #ENDPOINTS FOR V2
+    api.add_resource(User, '/auth/signup')
+    api.add_resource(Products, '/products/<int:id>')
+    api.add_resource(Sales, '/sales')
     return app

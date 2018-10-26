@@ -1,7 +1,7 @@
 '''Handles all the product queries from the database'''
 
 import json
-from __init__ import dbconnect, createTables
+from .__init__ import dbconnect, createTables
 
 
 

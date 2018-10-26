@@ -3,23 +3,20 @@
 
 
 import json
-from __init__ import dbconnect, createTables
+from passlib.hash import pbkdf2_sha256 as sha256
+from flask import Flask, jsonify, request
+from .__init__ import dbconnect, createTables
 
 
 
 class User:
-    def __init__(self, username, email, password):
-        self.role = role
-        self.username = username
-        self.email = email
-        self.password = password
 
-    def save(self):
+    def save(username, email, hash, admin_role=False):
         '''takes the data input from the user and saves it into the database'''
         conn = dbconnect()
         cur = conn.cursor()
-        query = "INSERT INTO users (username,email,password,admin_role) VALUES('%s, %s, %s %s');")
-        data = (self.username, self.email, self.password, self.role)
+        query = "INSERT INTO users (username,email,password,admin_role) VALUES('%s, %s, %s %s');"
+        data = (username,email,password,admin_role)
         cur.execute(qeury, data)
         conn.commit()
         cur.close()
@@ -34,7 +31,7 @@ class User:
         cur.close()
 
 
-    def ammend(self, id):
+    def ammend(id):
         '''method that updates data in the database'''
         conn= dbconnect()
         cur= conn.cursor()
@@ -53,3 +50,7 @@ class User:
         cur.execute(query,data)
         conn.commit()
         cur.close()
+
+    @staticmethod
+    def generate_hash(password):
+        return sha256.hash(password)
