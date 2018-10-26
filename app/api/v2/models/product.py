@@ -6,25 +6,20 @@ from .__init__ import dbconnect, createTables
 
 
 class Products:
-    def __init__(self):
-        self.id = id
-        self.price = price
-        self.quantity = quantity
-        self.category = category
-        self.productname = productname
-        self.description = description
 
-    def save(self):
+    def save(productname,description, category, quantity, price):
         '''takes the data input from the user and saves it into the database'''
         conn= dbconnect()
         cur= conn.cursor()
-        query = "INSERT INTO products (id,productname,description, category, quantity, price) VALUES(%s, %s, %s, %s, %s,%s);"
-        data = (self.id, self.productname, self.description, self.category, self.quantity, self.price)
+        selected = cur.execute("SELECT * FROM products WHERE id=(%s)"(id))
+
+        query = "INSERT INTO products (productname,description, category, quantity, price) VALUES(%s, %s, %s, %s, %s,%s);"
+        data = (productname, description,category, quantity, price)
         cur.execute(query, data)
         conn.commit()
         cur.close()
 
-    def viewall(self):
+    def viewall():
         '''queries the database to view all products'''
         conn= dbconnect()
         cur= conn.cursor()
@@ -32,41 +27,41 @@ class Products:
         cur.fetchall()
         cur.close()
 
-    def viewone(self):
+    def viewone():
         '''queries the database to view one product'''
         conn= dbconnect()
         cur= conn.cursor()
         query = "SELECT * FROM products WHERE id=(%s)"
-        data = (self.id,)
+        data = (id,)
         cur.execute(query,data)
         cur.close()
 
-    def ammend(self, productname,description, category, price):
+    def ammend( productname,description, category, price):
         '''method that updates product data in the database'''
         conn= dbconnect()
         cur= conn.cursor()
         query = "UPDATE products SET (productname,description, category, price) WHERE id=(%s);"
-        data = (self.productname, self.description, self.category, self.price)
+        data = ( productname,  description,  category,  price)
         cur.execute(query, data)
         conn.commit()
         cur.close()
 
-    def modifyquantity(self, quantity):
+    def modifyquantity(quantity):
         conn = dbconnect()
         cur = conn.cursor()
         query = "UPDATE products SET (quantity) WHERE id=(%s);"
-        quantity += self.quantity
-        data = (quantity, self.id)
+        quantity +=  quantity
+        data = (quantity,  id)
         cur.execute(query, data)
         conn.commit()
         cur.close()
 
-    def delete(self, id):
+    def delete(id):
         conn= dbconnect()
         cur= conn.cursor()
         '''method that deletes a record from the database'''
         query = "DELETE FROM products WHERE id=(%s) CASCADE;"
-        data = (self.id,)
+        data = (id,)
         cur.execute(query, data)
         conn.commit()
         cur.close()

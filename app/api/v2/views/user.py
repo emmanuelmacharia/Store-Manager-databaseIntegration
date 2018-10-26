@@ -11,13 +11,13 @@ app = Flask(__name__)
 api = Api(app)
 
 
-class User(Resource):
+class Users(Resource):
     '''defines the get-all,post, and delete user methods'''
     def get(self):
         return User.viewall(),200
 
     def post(self):
-        data = request.get_json()
+        data = request.get_json(force = True)
         username = data['username']
         email = data['email']
         password = data['password']

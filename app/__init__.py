@@ -5,7 +5,7 @@ from app.api.v1.views import AdminProducts, AttendantProducts, AttendantSales, A
 from flask_jwt_extended import JWTManager
 from app.api.v2.models import dbconnect, createTables
 from app.api.v2.views.product import Products
-from app.api.v2.views.user import User
+from app.api.v2.views.user import Users
 from app.api.v2.views.sale import Sales
 
 
@@ -20,8 +20,7 @@ def create_app(config_name):
 
     app = Flask(__name__, instance_relative_config = True)
     app.config.from_object(app_configurations['development'])
-    app.register_blueprint(v1)
-    app.register_blueprint(v2)
+
     app.config['SECRET_KEY'] = 'a-little-crazy-story'
     dbconnect()
     createTables()
@@ -38,7 +37,12 @@ def create_app(config_name):
     api.add_resource(Login, '/login')
 
     #ENDPOINTS FOR V2
-    api.add_resource(User, '/auth/signup')
-    api.add_resource(Products, '/products/<int:id>')
-    api.add_resource(Sales, '/sales')
+    database.add_resource(User, '/auth/signup')
+
+    database.add_resource(Products, '/products')
+
+    database.add_resource(Sales, '/sales')
+
+    app.register_blueprint(v1)
+    app.register_blueprint(v2)
     return app

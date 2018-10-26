@@ -15,11 +15,12 @@ class Products(Resource):
     '''defines the get, post, put and delete methods for products'''
     def post(self):
         pass
+
     def put(self):
         pass
 
     def get(self):
-        return Products.viewall()
+        return jsonify({"products":Products.viewall()}), 200
 
     def delete(self):
         id = parser.add_argument('id', type=int, help='id must be an integer')
