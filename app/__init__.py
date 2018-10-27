@@ -26,7 +26,7 @@ def create_app(config_name):
     createTables()
 
     jwt = JWTManager(app)
-
+    #ENDPOINTS FOR V1
     api.add_resource(AdminProducts, '/admin/products')
     api.add_resource(AttendantProducts, '/attendant/products')
     api.add_resource(AttendantSales, '/attendant/sales')
