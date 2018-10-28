@@ -10,8 +10,6 @@ class Sale:
         self.price = price
         self.quantity = quantity
         self.category = category
-        self.productname = productname
-        self.description = description
 
     def save(self):
         '''takes the data input from the user and saves it into the database'''
@@ -46,11 +44,11 @@ class Sale:
         conn.commit()
         cur.close()
 
-    def delete(self):
+    def delete(self,id):
         '''method that deletes a record from the database'''
         conn= dbconnect()
         cur= conn.cursor()
-        query = "DELETE FROM sales WHERE id=(%s) CASCADE;"
-        data = (self.id,)
-        cur.execute(query, data)
-        cur.commit()
+        query = "DELETE FROM sales WHERE id=(%s) CASCADE;"%(id,)
+        cur.execute(query)
+        conn.commit()
+        cur.close()

@@ -29,22 +29,20 @@ class Products(Resource):
         price = args.get('price')
         conn= dbconnect()
         cur= conn.cursor()
-        cur.execute("SELECT * FROM products WHERE productname= %s;" %('productname'))
-        result = cur.fetchone()
-        if result == None:
-            created = Product(productname,description,category,quantity,price)
-            created.save()
-            return make_response(jsonify({'message': 'product successfully created', 'product':created}), 201)
+        dup = cur.execute("SELECT * FROM products WHERE productname='%s';" %(productname))
+        if dup == None:
+            created = Product.save(productname,description,category,quantity,price)
         else:
-            productname = result[0]
-            description = result[1]
-            category = result[2]
-            quantity += result[3]
+            productname = result[1]
+            description = result[2]
+            category = result[3]
+            quantity = result[4]
             price = result[-1]
-            updated = cur.execute('UPDATE products SET %s WHERE productname = %s;'(quantity, productname))
+            updated = cur.execute("UPDATE products SET quantity = '%s' WHERE productname = '%s';"%(quantity, productname))
+            products = cur.execute("SELECT * FROM products")
             cur.close()
             conn.commit()
-            return make_response(jsonify({'message': 'product successfully updated', 'product':updated}), 201)
+            return make_response(jsonify({'message': 'product successfully updated', 'product':products}), 201)
 
 
     def put(self):
@@ -72,13 +70,22 @@ class Products(Resource):
         return jsonify({"products":Product.viewall()}), 200
 
     def delete(self):
-        id = parser.add_argument('id', type=int, help='id must be an integer')
         args = parser.parse_args()
-        # data = request.get_json()
-        # id = data['id']
-
-        if isinstance(args, int) == False:
-            return {'message':'id can only be an integer'}, 400
+        productname = args.get('productname')
+        conn = dbconnect()
+        cur = conn.cursor()
+        import pdb; pdb.set_trace()
+        item = cur.execute("SELECT * FROM products WHERE productname = '%s';" %(productname))
+        if item == None:
+            {"message":"the product requested does not exist"}, 404
         else:
-            result = Products()
-            result.delete(args)
+            id = item[0]
+            Product.delete(id)
+            return {"message":"{} has successfully been deleted".format(productname)}, 200
+        # id = parser.add_argument('id', type=int, help='id must be an integer')
+        # args = parser.parse_args()
+        # if isinstance(args, int) == False:
+        #     return {'message':'id can only be an integer'}, 400
+        # else:
+        #     result = Products()
+        #     result.delete(args)

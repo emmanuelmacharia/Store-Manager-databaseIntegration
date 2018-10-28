@@ -28,13 +28,18 @@ class Users(Resource):
         else:
             return 'please enter data in the right format', 400
 
-        try:
-            new_user = User.save(username, email, hash, role)
-            ac_token = create_access_token(identity = data['email'])
-            new_token = create_refresh_token(identity = data['email'])
-            return {'message': 'new user created','access_token':ac_token,'refresh_token':new_token}, 201
-        except:
-            return {'message':'Hmmm...something here\'s afoot'}, 404
+        new_user = User.save(username, email, hash, admin_role=False)
+
+        ac_token = create_access_token(identity = data['email'])
+        new_token = create_refresh_token(identity = data['email'])
+        return {'message': 'new user created','access_token':ac_token,'refresh_token':new_token}, 201
+        # try:
+        #     new_user = User.save(username, email, hash, role)
+        #     ac_token = create_access_token(identity = data['email'])
+        #     new_token = create_refresh_token(identity = data['email'])
+        #     return {'message': 'new user created','access_token':ac_token,'refresh_token':new_token}, 201
+        # except:
+        #     return {'message':'Hmmm...something here\'s afoot'}, 404
 
     def delete(self):
         id = parser.add_argument('id', type=int, help='id must be an integer')

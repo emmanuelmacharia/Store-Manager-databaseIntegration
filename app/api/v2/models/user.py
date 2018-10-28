@@ -15,9 +15,8 @@ class User:
         '''takes the data input from the user and saves it into the database'''
         conn = dbconnect()
         cur = conn.cursor()
-        query = "INSERT INTO users (username,email,hash,admin_role) VALUES('%s, %s, %s %s');"
-        data = (username,email,hash,admin_role)
-        cur.execute(qeury, data)
+        query = "INSERT INTO users (username, email, password, admin_role) VALUES('%s', '%s', '%s', '%s');"%(username, email, hash, admin_role)
+        cur.execute(query)
         conn.commit()
         cur.close()
 

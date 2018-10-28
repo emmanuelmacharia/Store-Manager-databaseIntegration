@@ -6,24 +6,28 @@ from .__init__ import dbconnect, createTables
 
 
 class Product:
-    def __init__(self, productname,description,category,quantity,price):
-        self.productname = productname
-        self.description = description
-        self.category = category
-        self.quantity = quantity
-        self.price = price
+    # def __init__( productname,description,category,quantity,price):
+        # self.productname = productname
+        # self.description = description
+        # self.category = category
+        # self.quantity = quantity
+        # self.price = price
+        # pass
 
-    def save(self):
+    def save(productname,description,category,quantity,price):
         '''takes the data input from the user and saves it into the database'''
         conn= dbconnect()
         cur= conn.cursor()
         # selected = cur.execute("SELECT * FROM products WHERE id=(%s)"(id))
         query = """INSERT INTO products
                 (productname,description, category, quantity, price)
-                VALUES('%s', %s, %s, %s, %s);""" %(self.productname, self.description,self.category, self.quantity, self.price)
+                VALUES('%s', '%s', '%s' , '%s', '%s');""" %(productname, description,category, quantity, price)
         cur.execute(query)
+        result = cur.execute("SELECT * FROM products WHERE productname = '%s';"%(productname))
         conn.commit()
         cur.close()
+        return {"message":"product successfully created", "products":result},201
+
 
     def viewall():
         '''queries the database to view all products'''

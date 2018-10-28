@@ -6,14 +6,14 @@ import psycopg2.extras as extra
 
 
 
-query1 = """CREATE TABLE IF NOT EXISTS users(id serial PRIMARY KEY NOT NULL,
+query1 = """CREATE TABLE IF NOT EXISTS users(id serial PRIMARY KEY,
                                             username text NOT NULL ,
                                             email text NOT NULL,
                                             password text NOT NULL,
                                             admin_role bool NOT NULL);"""
 
 
-query2 = """CREATE TABLE IF NOT EXISTS products(id serial PRIMARY KEY NOT NULL,
+query2 = """CREATE TABLE IF NOT EXISTS products(id serial PRIMARY KEY,
                     productname text NOT NULL ,
                     description text NOT NULL ,
                     category text NOT NULL ,
@@ -21,7 +21,7 @@ query2 = """CREATE TABLE IF NOT EXISTS products(id serial PRIMARY KEY NOT NULL,
                     price INTEGER NOT NULL);"""
 
 
-query3 = """CREATE TABLE IF NOT EXISTS sales(id serial PRIMARY KEY NOT NULL,
+query3 = """CREATE TABLE IF NOT EXISTS sales(id serial PRIMARY KEY,
                     productname text NOT NULL ,
                     description text NOT NULL ,
                     category text NOT NULL ,
