@@ -5,7 +5,7 @@ from app.api.v1.views import AdminProducts, AttendantProducts, AttendantSales, A
 from flask_jwt_extended import JWTManager
 from app.api.v2.models import dbconnect, createTables
 from app.api.v2.views.product import Products
-from app.api.v2.views.user import Users
+from app.api.v2.views.user import Users, Signin
 from app.api.v2.views.sale import Sales
 
 
@@ -40,6 +40,7 @@ def create_app(config_name):
     database.add_resource(Users, '/auth/signup')
     database.add_resource(Products, '/products')
     database.add_resource(Sales, '/sales')
+    database.add_resource(Signin, '/auth/login')
 
     app.register_blueprint(v1)
     app.register_blueprint(v2)

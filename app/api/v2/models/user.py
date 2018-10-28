@@ -29,6 +29,17 @@ class User:
         cur.fetchall()
         cur.close()
 
+    def viewone(email):
+        conn= dbconnect()
+        cur= conn.cursor()
+        cur.execute("SELECT * FROM users WHERE email = '%s';"%(email))
+        result = cur.fetchone()
+        if result == None:
+            return False
+        else:
+            return True
+        cur.close()
+
 
     def ammend(id):
         '''method that updates data in the database'''
@@ -53,3 +64,15 @@ class User:
     @staticmethod
     def generate_hash(password):
         return sha256.hash(password)
+
+    @staticmethod
+    def verify_hash(password, email):
+        conn= dbconnect()
+        cur= conn.cursor()
+        query = "SELECT * FROM users WHERE email = '%s';"%(email)
+        cur.execute(query)
+        result = cur.fetchone()
+        import pdb; pdb.set_trace()
+        cur.close()
+        hash = result[-2]
+        return sha256.verify(password, hash)
