@@ -48,26 +48,18 @@ class Product:
             #     200,
             # )
 
-    @classmethod
-    def viewone(cls):
+
+    def viewone(id):
         """queries the database to view one product"""
         conn = dbconnect()
         cur = conn.cursor()
-        query = "SELECT * FROM products WHERE productname='%s'" % (productname,)
+        query = "SELECT * FROM products WHERE id='%s'" % (id,)
         cur.execute(query)
         record = cur.fetchone()
         cur.close()
-        return (
-            cls(
-                id=record[0],
-                productname=record[1],
-                description=record[2],
-                category=record[3],
-                quantity=record[4],
-                price=record[-1],
-            ),
-            200,
-        )
+        if record == None:
+            return {'message':'No product by that id found, kindly review your input'}, 404
+        return [record[0], record[1], record[2], record[3], record[4], record[-1]], 200
 
     def ammend(productname, description, category, price):
         """method that updates product data in the database"""

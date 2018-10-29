@@ -107,11 +107,12 @@ class Products(Resource):
             )
 
     def get(self):
-
+        '''Allows a user to get all products in the inventory'''
         all_products = Product.viewall()
         return all_products
 
     def delete(self):
+        '''Allows a admin to delete a product from the inventory'''
         args = parser.parse_args()
         productname = args.get("productname")
         conn = dbconnect()
@@ -134,3 +135,9 @@ class Products(Resource):
         # else:
         #     result = Products()
         #     result.delete(args)
+
+class SingleProduct(Resource):
+    '''Endpoints pertaining to methods that couldnt be in the Products class'''
+    def get(self, id):
+        '''Allows a user to view one single product'''
+        return Product.viewone(id)
