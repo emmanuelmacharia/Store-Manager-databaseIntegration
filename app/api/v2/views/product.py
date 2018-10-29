@@ -45,7 +45,6 @@ class Products(Resource):
         price = args.get("price")
         conn = dbconnect()
         cur = conn.cursor()
-        import pdb; pdb.set_trace()
         dup = cur.execute(
             "SELECT * FROM products WHERE productname='%s';" % (productname)
         )

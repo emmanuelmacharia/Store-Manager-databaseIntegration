@@ -6,26 +6,27 @@ from .__init__ import dbconnect, createTables
 
 
 class Sale:
-    def __init__(self):
-        self.price = price
-        self.quantity = quantity
-        self.category = category
-
-    def save(self):
+    '''Contains the sales models'''
+    def save(productname, quantity, price):
         '''takes the data input from the user and saves it into the database'''
         conn= dbconnect()
         cur= conn.cursor()
-        cur.execute("INSERT INTO sales (id,productname,description, category, quantity, price) VALUES('%s, %s, %s, %s, %s,%s');")
+        cur.execute("INSERT INTO sales (productname,quantity, price) VALUES('%s', '%s' ,'%s');"%(productname,quantity,price))
         cur.close()
 
-    def viewall(self):
+    def viewall():
         '''queries the database to view all sales'''
         conn= dbconnect()
         cur= conn.cursor()
         cur.execute("SELECT * FROM sales;")
+        sales = cur.fetchall()
+        all_sales = []
+        for sale in sales:
+            all_sales.append(sales)
         cur.close()
+        return all_sales
 
-    def viewone(self):
+    def viewone():
         '''queries the database to view one product'''
         conn= dbconnect()
         cur= conn.cursor()
@@ -34,7 +35,7 @@ class Sale:
         cur.execute(query, data)
         cur.close()
 
-    def ammend(self):
+    def ammend():
         '''method that updates product data in the database'''
         conn= dbconnect()
         cur= conn.cursor()
@@ -44,7 +45,7 @@ class Sale:
         conn.commit()
         cur.close()
 
-    def delete(self,id):
+    def delete(id):
         '''method that deletes a record from the database'''
         conn= dbconnect()
         cur= conn.cursor()

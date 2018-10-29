@@ -23,10 +23,9 @@ query2 = """CREATE TABLE IF NOT EXISTS products(id serial PRIMARY KEY,
 
 query3 = """CREATE TABLE IF NOT EXISTS sales(id serial PRIMARY KEY,
                     productname text NOT NULL ,
-                    description text NOT NULL ,
-                    category text NOT NULL ,
                     quantity INTEGER NOT NULL,
-                    price INTEGER NOT NULL);"""
+                    price INTEGER NOT NULL,
+                    date_sold TIMESTAMP);"""
 
 
 queries = [query1, query2, query3]

@@ -29,7 +29,7 @@ class Product:
         )
         cur.execute(query)
         result = cur.execute(
-            "SELECT * FROM products WHERE productname = '%s';" % (productname,)
+            "SELECT * FROM products WHERE productname = '%s';" % (productname)
         )
         conn.commit()
         cur.close()
@@ -42,7 +42,10 @@ class Product:
         cur.execute("SELECT * FROM products;")
         records = cur.fetchall()
         cur.close()
-        return records
+        all_products = []
+        for record in records:
+            all_products.append(record)
+        return all_products
             # (
             #     (record[0], record[1], record[2], record[3], record[4], record[-1]),
             #     200,
@@ -57,9 +60,13 @@ class Product:
         cur.execute(query)
         record = cur.fetchone()
         cur.close()
+        single_product = []
         if record == None:
             return {'message':'No product by that id found, kindly review your input'}, 404
-        return [record[0], record[1], record[2], record[3], record[4], record[-1]], 200
+        else:
+            return [record[0], record[1], record[2], record[3], record[4], record[-1]], 200
+
+
 
     def ammend(productname, description, category, price):
         """method that updates product data in the database"""

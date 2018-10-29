@@ -10,7 +10,7 @@ class TestProducts(BaseTestClient):
     def test_get_all_products(self):
         test_user= self.register()
         test_user= self.signin()
-        response = self.app.get('api/v2/admin/products'
+        response = self.app.get('api/v2/products'
                                     headers=dict(Authorization="Bearer " + self.signin()),
                                     content_type = 'application/json'
                                     )
@@ -19,7 +19,7 @@ class TestProducts(BaseTestClient):
     def test_post_products(self):
         test_user= self.register()
         test_user= self.signin()
-        response = self.app.post('api/v2/admin/products'
+        response = self.app.post('api/v2/products'
                                     'api/v2/admin/products',
                                     headers=dict(Authorization="Bearer " + self.signin()),
                                     data = json.dumps(self.test_valid_product),
@@ -40,7 +40,7 @@ class TestProducts(BaseTestClient):
     def test_no_products_found(self):
         test_user= self.register()
         test_user= self.signin()
-        response = self.app.post('api/v2/admin/products'
+        response = self.app.post('api/v2/products'
                             headers=dict(Authorization="Bearer " + self.signin()),
                             data = json.dumps(self.test_valid_product),
                             content_type = 'application/json'
