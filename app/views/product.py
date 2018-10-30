@@ -35,7 +35,7 @@ parser.add_argument(
 
 class Products(Resource):
     """defines the get, post, put and delete methods for products"""
-
+    @jwt_required
     def post(self):
         args = parser.parse_args()
         productname = args.get("productname")
@@ -45,32 +45,17 @@ class Products(Resource):
         price = args.get("price")
         conn = dbconnect()
         cur = conn.cursor()
-        dup = cur.execute(
+        cur.execute(
             "SELECT * FROM products WHERE productname='%s';" % (productname)
         )
+        dup = cur.fetchall()
         if dup == None:
-            created = Product.save(productname, description, category, quantity, price)
+            created = Product().save(productname, description, category, quantity, price)
+            return jsonify({'product':created})
         else:
             return Product.modifyquantity(quantity, productname), 202
-            # productname = result[1]
-            # description = result[2]
-            # category = result[3]
-            # quantity = result[4]
-            # price = result[-1]
-            # updated = cur.execute(
-            #     "UPDATE products SET quantity = '%s' WHERE productname = '%s';"
-            #     % (quantity, productname)
-            # )
-            # products = cur.execute("SELECT * FROM products")
-            # cur.close()
-            # conn.commit()
-            # return make_response(
-            #     jsonify(
-            #         {"message": "product successfully updated", "product": products}
-            #     ),
-            #     201,
-            # )
 
+    @jwt_required
     def put(self):
         args = parser.parse_args()
         productname = args.get("productname")
@@ -78,10 +63,9 @@ class Products(Resource):
         category = args.get("category")
         quantity = args.get("quantity")
         price = args.get("price")
-        import pdb; pdb.set_trace()
         conn = dbconnect()
         cur = conn.cursor()
-        cur.execute("SELECT * FROM products WHERE productname= %s;" % ("productname"))
+        cur.execute("SELECT * FROM products WHERE productname= %s;" % (productname))
         result = cur.fetchone()
         if result == None:
             return {"message": "product does not exist, please check your input"}, 400
@@ -100,25 +84,24 @@ class Products(Resource):
             conn.commit()
             return make_response(
                 jsonify(
-                    {"message": "product successfully updated", "product": updated}
+                    {"message": "product successfully updated", "product": product}
                 ),
                 202,
             )
-
+    @jwt_required
     def get(self):
-        '''Allows a user to get all products in the inventory'''
-        all_products = Product.viewall()
+        """Allows a user to get all products in the inventory"""
+        all_products = Product().viewall()
         return all_products
 
+    @jwt_required
     def delete(self):
-        '''Allows a admin to delete a product from the inventory'''
+        """Allows a admin to delete a product from the inventory"""
         args = parser.parse_args()
         productname = args.get("productname")
         conn = dbconnect()
         cur = conn.cursor()
-        cur.execute(
-            "SELECT * FROM products WHERE productname = '%s';" % (productname)
-        )
+        cur.execute("SELECT * FROM products WHERE productname = '%s';" % (productname))
 
         item = cur.fetchone()
         if item == None:
@@ -135,8 +118,10 @@ class Products(Resource):
         #     result = Products()
         #     result.delete(args)
 
+
 class SingleProduct(Resource):
-    '''Endpoints pertaining to methods that couldnt be in the Products class'''
+    """Endpoints pertaining to methods that couldnt be in the Products class"""
+    @jwt_required
     def get(self, id):
-        '''Allows a user to view one single product'''
-        return Product.viewone(id)
+        """Allows a user to view one single product"""
+        return Product().viewone(id)

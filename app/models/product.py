@@ -1,7 +1,7 @@
 """Handles all the product queries from the database"""
 
 import json
-from .__init__ import dbconnect, createTables
+from ..models import dbconnect
 
 
 class Product:
@@ -13,7 +13,7 @@ class Product:
     # self.price = price
     # pass
 
-    def save(productname, description, category, quantity, price):
+    def save(self, productname, description, category, quantity, price):
         """takes the data input from the user and saves it into the database"""
         conn = dbconnect()
         cur = conn.cursor()
@@ -35,7 +35,7 @@ class Product:
         cur.close()
         return {"message": "product successfully created", "products": result}, 201
 
-    def viewall():
+    def viewall(self):
         """queries the database to view all products"""
         conn = dbconnect()
         cur = conn.cursor()
@@ -46,13 +46,12 @@ class Product:
         for record in records:
             all_products.append(record)
         return all_products
-            # (
-            #     (record[0], record[1], record[2], record[3], record[4], record[-1]),
-            #     200,
-            # )
+        # (
+        #     (record[0], record[1], record[2], record[3], record[4], record[-1]),
+        #     200,
+        # )
 
-
-    def viewone(id):
+    def viewone(self, id):
         """queries the database to view one product"""
         conn = dbconnect()
         cur = conn.cursor()
@@ -62,11 +61,15 @@ class Product:
         cur.close()
         single_product = []
         if record == None:
-            return {'message':'No product by that id found, kindly review your input'}, 404
+            return (
+                {"message": "No product by that id found, kindly review your input"},
+                404,
+            )
         else:
-            return [record[0], record[1], record[2], record[3], record[4], record[-1]], 200
-
-
+            return (
+                [record[0], record[1], record[2], record[3], record[4], record[-1]],
+                200,
+            )
 
     def ammend(productname, description, category, price):
         """method that updates product data in the database"""
@@ -84,18 +87,19 @@ class Product:
         cur.execute(query)
         conn.commit()
         return_query = "SELECT * FROM products WHERE productname='%s'" % (productname,)
+        cur.execute(return_query)
         record = cur.fetchone()
         cur.close()
         return (
             {
                 "message": "product updated successfully",
-                "product": cls(
-                    id=record[0],
-                    productname=record[1],
-                    description=record[2],
-                    category=record[3],
-                    quantity=record[4],
-                    price=record[-1],
+                "product": ({
+                    'id':record[0],
+                    'productname':record[1],
+                    'description':record[2],
+                    'category':record[3],
+                    'quantity':record[4],
+                    'price':record[-1]}
                 ),
             },
             202,
@@ -104,7 +108,7 @@ class Product:
     def modifyquantity(quantity, productname):
         conn = dbconnect()
         cur = conn.cursor()
-        cur.execute("SELECT * FROM products WHERE productname= %s;" % (productname))
+        cur.execute("SELECT * FROM products WHERE productname= '%s';" % (productname))
         result = cur.fetchone()
         quantity += int(result[4])
         query = "UPDATE products SET quantity= '%s' WHERE productname='%s';" % (
@@ -113,12 +117,24 @@ class Product:
         )
         cur.execute(query)
         conn.commit()
-        return_query = "SELECT * FROM products WHERE productname='%s'" % (productname,)
+        return_query = "SELECT * FROM products WHERE productname='%s';" % (productname,)
+        cur.execute(return_query)
         record = cur.fetchone()
         cur.close()
-        return{
+        return (
+            {
                 "message": "product updated successfully",
-                "product": [record[0], record[1],record[2], record[3], record[4], record[-1]]}, 202
+                "product": [
+                    record[0],
+                    record[1],
+                    record[2],
+                    record[3],
+                    record[4],
+                    record[-1],
+                ],
+            },
+            202,
+        )
 
     def delete(id):
         conn = dbconnect()

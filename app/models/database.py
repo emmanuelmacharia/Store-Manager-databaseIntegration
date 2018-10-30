@@ -1,10 +1,4 @@
-#DATABASE.PY
-
-
-import psycopg2
-import psycopg2.extras as extra
-
-
+# DATABASE.PY
 
 query1 = """CREATE TABLE IF NOT EXISTS users(id serial PRIMARY KEY,
                                             username text NOT NULL ,
@@ -28,4 +22,11 @@ query3 = """CREATE TABLE IF NOT EXISTS sales(id serial PRIMARY KEY,
                     date_sold TIMESTAMP);"""
 
 
+deluser = "DROP TABLE users IF EXISTS"
+delproducts = "DROP TABLE products IF EXISTS"
+delsales = "DROP TABLE sales IF EXISTS"
+
+
 queries = [query1, query2, query3]
+
+deletes = [deluser, delproducts, delsales]

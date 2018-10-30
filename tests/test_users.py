@@ -5,7 +5,7 @@ import json
 from baseTest import BaseTestClient
 
 class TestProducts(BaseTestClient):
-    '''''''
+
     def test_empty_username_registration_login(self):
         '''tests whether the username provided is an empty string, returns an error message'''
         #new_user = {"username":"", "email":"user@inlook.com","password": "fdkff5A"}
@@ -61,4 +61,4 @@ class TestProducts(BaseTestClient):
         self.assertEqual(response.status_code, 200)
 
 if __name__ == '__main__':
-unittest.main(exit= False)
+    unittest.main(exit= False)

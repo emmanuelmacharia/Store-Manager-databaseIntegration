@@ -1,3 +1,6 @@
+
+'''Endpoints for the user methods '''
+
 import re
 
 from flask import Flask, request, jsonify, make_response
@@ -8,13 +11,21 @@ from flask_jwt_extended import (
     create_refresh_token,
     jwt_refresh_token_required,
     get_jwt_identity,
+    get_raw_jwt
 )
 
 from ..models.user import User
-from .utils import user_valid
+from ..utils import user_valid
 
 app = Flask(__name__)
 api = Api(app)
+
+blacklist = set()
+@jwt.token_in_blacklist_loader
+def blacklist_token(token):
+    '''checks if the access_token is already blacklisted'''
+    access_token = decrypted_token['access_token']
+    return access_token in blacklist
 
 
 class Users(Resource):
@@ -39,11 +50,9 @@ class Users(Resource):
             new_user = User.save(username, email, hash, admin_role=False)
             ac_token = create_access_token(identity=data["email"])
             new_token = create_refresh_token(identity=data["email"])
-            return (
-                {
+            return jsonify(
+                {   
                     "message": "new user created",
-                    "access_token": ac_token,
-                    "refresh_token": new_token,
                 },
                 201,
             )
@@ -53,7 +62,6 @@ class Users(Resource):
     def delete(self):
         id = parser.add_argument("id", type=int, help="id must be an integer")
         args = parser.parse_args()
-
         result = Products()
         result.delete(args)
 
@@ -73,8 +81,8 @@ class Signin(Resource):
         if result == True:
             User.generate_hash(password)
 
-        session = User.viewone(email)
-        if session == False:
+        user_exist = User.viewone(email)
+        if user_exist == False:
             return (
                 {
                     "message": "Username, {}, email, {} or password dont seem to exist".format(
@@ -86,18 +94,30 @@ class Signin(Resource):
 
         if User.verify_hash(password, email) == True:
             ac_token = create_access_token(identity=email)
-            new_token = create_refresh_token(identity=email)
+            
             return (
                 {
                     "message": "User successfully logged in",
                     "status": "Success",
-                    "access_token": ac_token,
-                    "refresh_token": new_token,
+                    "access_token": ac_token
+                    
                 },
                 200,
             )
         else:
-            return (
+            return jsonify(
                 {"message": "no user by that email, please check your credentials"},
-                400,
+                400
             )
+        
+        return jsonify({'message':'signin successful'}), 200
+
+    def get(self):
+        return User.viewone()
+
+    def delete(self)
+        '''Logs the user out by balcklisting the token'''
+        access_token = get_raw_jwt()['access_token']
+        blacklist.add('access_token')
+        return make_response(jsonify({'message':'User logged out'}), 200)
+        

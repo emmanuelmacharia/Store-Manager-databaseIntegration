@@ -2,19 +2,25 @@
 import unittest
 from app import create_app
 import json
+from app.models import dbconnect, droptables
 
 class BaseTestClient(unittest.TestCase):
+    '''the base test configurations for the entire application'''
+    def __init__(self):
+        pass
 
     def setUp(self):
+        '''creates the data required in the tests. also connects to the test database where the data will be stored'''
+        dbconnect()
         self.app = create_app('testing').test_client()
 
-    self.user_information = {
+    user_information = {
         "username":"Spongebob",
         "email": "spongebobsquarepants@bikinibottom.sea",
         "password": "CrustyKr1abs"
     }
 
-    self.test_valid_product = {
+    test_valid_product = {
         "name" : "hp",
         "description" : "elite",
         "category" : "computers",
@@ -22,37 +28,38 @@ class BaseTestClient(unittest.TestCase):
         "price" : 50000
         }
 
-    self.test_empty_username= {
+    test_empty_username= {
         "username":"",
         "email":"user@inlook.com",
         "password": "fdkff5A"
         }
-    self.test_empty_email = {
+    test_empty_email = {
         "username":"user",
         "email":"",
         "password": "fdkff5A"
         }
-    self.test_empty_password = {
+    test_empty_password = {
         "username":"user",
         "email":"solomarsha@outlook.com",
         "password": ""
         }
-    self.test_invalid_password = {
+    test_invalid_password = {
         "username":"user",
         "email":"solomarsha@outlook.com",
         "password": "pass"
         }
-    self.test_valid_input= {
+    test_valid_input= {
         "username":"user",
         "email":"solomarsha@outlook.com",
         "password": "pass1Word"
         }
-    self.test_login_success = {
+    test_login_success = {
         "username":"user",
         "email":"solomarsha@outlook.com",
         "password": "pass1Word"
         }
 
+    
 
     def register(self):
         '''registers the test client user'''

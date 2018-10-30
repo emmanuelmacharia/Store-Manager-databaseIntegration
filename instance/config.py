@@ -3,15 +3,11 @@ import os
 class Configurations():
     DEBUG = False
     TESTING = False
-
-# parameters = {
-#     "dbname":os.getenv("storemanager"),
-#     "host":os.getenv("localhost"),
-#     "port":os.getenv(5432),
-#     "user":os.getenv("postgres"),
-#     "password":os.getenv("Permafrost")
-# }
-#{}"dbname='storemanager' host='localhost' port=5432 user='postgres' password='Permafrost'"
+    DBNAME= os.getenv('DBNAME')
+    HOST= os.getenv('HOST')
+    PORT=os.getenv('PORT') 
+    USER=os.getenv('USER')
+    PASSWORD=os.getenv('PASSWORD')
 
 class Development(Configurations):
     DEBUG = True
@@ -19,7 +15,7 @@ class Development(Configurations):
 class Testing(Configurations):
     DEBUG = True
     TESTING = True
-
+    DBNAME = 'teststoremanagerdb'
 
 class Production(Configurations):
     DEBUG = False

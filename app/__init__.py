@@ -1,47 +1,42 @@
+"""Initializes and creates the app as one function"""
+
+import os
+
 from flask import Blueprint, Flask
-from instance.config import *
-from flask_restful import Api, Resource
-from app.api.v1.views import AdminProducts, AttendantProducts, AttendantSales, AdminSale, Sale, Product, Register, Login
 from flask_jwt_extended import JWTManager
-from app.api.v2.models import dbconnect, createTables
-from app.api.v2.views.product import Products, SingleProduct
-from app.api.v2.views.user import Users, Signin
-from app.api.v2.views.sale import Sales
+from flask_restful import Api, Resource
+
+from .models import dbconnect, createTables
+from instance.config import app_configurations
+from .views.product import Products, SingleProduct
+# from views.user import Users, Signin
+from .views.sale import Sales
 
 
-
-v1 = Blueprint('v1',__name__,url_prefix='/api/v1')
+v1 = Blueprint("v1", __name__, url_prefix="/api/v1")
 api = Api(v1)
-v2 = Blueprint('v2',__name__, url_prefix='/api/v2')
+v2 = Blueprint("v2", __name__, url_prefix="/api/v2")
 database = Api(v2)
 
 
 def create_app(config_name):
-
-    app = Flask(__name__, instance_relative_config = True)
-    app.config.from_object(app_configurations['development'])
-
-    app.config['SECRET_KEY'] = 'a-little-crazy-story'
+    """Runs the entire appliation"""
+    app = Flask(__name__, instance_relative_config=True)
+    # app.config.from_envvar("APP_SETTINGS")
+    app.config.from_object(app_configurations["development"])
+    database_url = os.getenv("DATABASE_URL")
+    secret_key = os.getenv("SECRET_KEY")
     dbconnect()
     createTables()
 
     jwt = JWTManager(app)
-    #ENDPOINTS FOR V1
-    api.add_resource(AdminProducts, '/admin/products')
-    api.add_resource(AttendantProducts, '/attendant/products')
-    api.add_resource(AttendantSales, '/attendant/sales')
-    api.add_resource(AdminSale, '/admin/sales')
-    api.add_resource(Sale, '/admin/sales/<int:id>')
-    api.add_resource(Product, '/products/<int:id>')
-    api.add_resource(Register, '/register')
-    api.add_resource(Login, '/login')
 
-    #ENDPOINTS FOR V2
-    database.add_resource(Users, '/auth/signup')
-    database.add_resource(Products, '/products')
-    database.add_resource(Sales, '/sales')
-    database.add_resource(Signin, '/auth/login')
-    database.add_resource(SingleProduct, '/product/<int:id>')
+    # ENDPOINTS FOR V2
+    # database.add_resource(Users, "/auth/signup")
+    database.add_resource(Products, "/products")
+    database.add_resource(Sales, "/sales")
+    # database.add_resource(Signin, "/auth/login")
+    database.add_resource(SingleProduct, "/product/<int:id>")
 
     app.register_blueprint(v1)
     app.register_blueprint(v2)
