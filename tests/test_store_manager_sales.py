@@ -1,7 +1,7 @@
 import unittest
 from app import create_app
 import json
-from baseTest import BaseTestClient
+from .baseTest import BaseTestClient
 
 class TestSale(BaseTestClient):
     def test_get_admin_sales(self):
@@ -56,12 +56,8 @@ class TestSale(BaseTestClient):
                                     headers=dict(Authorization="Bearer " + self.signin()),
                                     content_type = 'application/json')
         self.assertEqual(response.status_code, 404)
-        #
-        # def test_validator_sales(self):
-        #     test_user= self.register()
-        #     test_user= self.signin()
 
 
 
 if __name__ == '__main__':
-unittest.main(exit= False)
+    unittest.main(exit= False)

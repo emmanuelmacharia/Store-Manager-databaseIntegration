@@ -6,11 +6,9 @@ from .database import queries
 from instance.config import Configurations, Testing
 
 
-
 def dbconnect():
     '''connects to the databse'''
     environment = os.getenv('APP_SETTINGS')
-    print(environment)
     try:
         if environment == 'production' or environment == 'development':
             conn = psycopg2.connect(dbname=Configurations.DBNAME, 
@@ -26,6 +24,8 @@ def dbconnect():
     except Exception as e:
         return ('failed to connect', e)
 
+conn = dbconnect()
+print(conn)
 
 def createTables():
     '''creates all the tables in the database'''

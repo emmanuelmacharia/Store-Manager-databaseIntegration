@@ -2,14 +2,14 @@
 import unittest
 from app import create_app
 import json
-from baseTest import BaseTestClient
+from .baseTest import BaseTestClient
 
 class TestProducts(BaseTestClient):
 
     def test_empty_username_registration_login(self):
         '''tests whether the username provided is an empty string, returns an error message'''
         #new_user = {"username":"", "email":"user@inlook.com","password": "fdkff5A"}
-        response = self.app.post('api/v2/register',
+        response = self.app.post(self.registration_url,
                                     data = json.dumps(self.test_empty_username),
                                     content_type = 'application/json'
                                     )
@@ -18,7 +18,7 @@ class TestProducts(BaseTestClient):
     def test_empty_email_registration_login(self):
         '''tests whether the username provided is an empty string, returns an error message'''
         #new_user = {"username":"user", "email":"", "password": "fdkff5A"}
-        response = self.app.post('api/v2/register',
+        response = self.app.post(self.registration_url,
                                     data = json.dumps(self.test_empty_email),
                                     content_type = 'application/json'
                                     )
@@ -27,7 +27,7 @@ class TestProducts(BaseTestClient):
     def test_empty_password_registration_login(self):
         '''tests whether the username provided is an empty string, returns an error message'''
         #new_user = {"username":"user", "email":"solomarsha@outlook.com","password": ""}
-        response = self.app.post('api/v2/register',
+        response = self.app.post(self.registration_url,
                                     data = json.dumps(self.test_empty_password),
                                     content_type = 'application/json'
                                     )
@@ -36,7 +36,7 @@ class TestProducts(BaseTestClient):
     def test_invalid_password_registration_login(self):
         '''tests whether the username provided is an empty string, returns an error message'''
         #new_user = {"username":"user", "email":"solomarsha@outlook.com","password": "pass"}
-        response = self.app.post('api/v2/register',
+        response = self.app.post(self.registration_url,
                                     data = json.dumps(self.test_invalid_password),
                                     content_type = 'application/json'
                                     )
@@ -44,7 +44,7 @@ class TestProducts(BaseTestClient):
 
     def test_register_success(self):
         '''tests whether the username, password and email provided are valid, returns 201'''
-        response = self.app.post('api/v2/register',
+        response = self.app.post(self.registration_url,
                                     data = json.dumps(self.test_valid_input),
                                     content_type = 'application/json'
                                     )

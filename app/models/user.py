@@ -52,9 +52,8 @@ class User:
         """method that deletes a record from the database"""
         conn = dbconnect()
         cur = conn.cursor()
-        query = "DELETE FROM users WHERE id=(%s);"
-        data = (id,)
-        cur.execute(query, data)
+        query = "DELETE FROM users WHERE id=(%s);"%(id,)
+        cur.execute(query)
         conn.commit()
         cur.close()
 
@@ -69,9 +68,6 @@ class User:
         query = "SELECT * FROM users WHERE email = '%s';" % (email)
         cur.execute(query)
         result = cur.fetchone()
-        import pdb
-
-        pdb.set_trace()
         cur.close()
         hash = result[-2]
         return sha256.verify(password, hash)
