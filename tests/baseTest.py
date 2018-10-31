@@ -2,6 +2,9 @@
 import unittest
 from app import create_app
 import json
+from app.views.product import Products, SingleProduct
+from app.views.sale import Sales
+from app.views.user import Users, Signin, Logout
 from app.models import dbconnect, droptables, createTables
 
 class BaseTestClient(unittest.TestCase):

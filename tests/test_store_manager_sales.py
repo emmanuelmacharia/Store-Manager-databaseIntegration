@@ -2,6 +2,7 @@ import unittest
 from app import create_app
 import json
 from .baseTest import BaseTestClient
+from app.views.sale import Sales
 
 class TestSale(BaseTestClient):
     def test_get_admin_sales(self):

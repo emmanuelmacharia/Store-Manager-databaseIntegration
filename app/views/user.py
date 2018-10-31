@@ -21,11 +21,10 @@ from ..utils import user_valid
 app = Flask(__name__)
 api = Api(app)
 
-jwt = JWTManager(app)
+
 
 
 blacklist = set()
-
 
 class Users(Resource):
     """defines the get-all,post, and delete user methods"""
@@ -43,17 +42,11 @@ class Users(Resource):
         if result == True:
             hash = User().generate_hash(password)
         else:
-            return "please enter data in the right format", 400
+            return jsonify({'message':'please enter data in the right format'}), 400
 
         try:
             User().save(username, email, hash, admin_role=False)
-            ac_token = create_access_token(identity=data["email"], expires_delta = datetime.timedelta(hours=1))
-            return jsonify(
-                {   
-                    "message": "new user created",
-                },
-                201,
-            )
+            return {"message": "new user created"},201
         except Exception as e:
             return {"message": "Hmmm...something here's afoot"}, e, 404
 
@@ -61,7 +54,7 @@ class Users(Resource):
         data = request.get_json()
         id = data['id']
 
-        result = Product()
+        result = User()
         result.delete(id)
 
 
@@ -81,33 +74,19 @@ class Signin(Resource):
             User.generate_hash(password)
 
         user_exist = User().viewone(email)
-        if user_exist == False:
-            return (
-                {
-                    "message": "Username, {}, email, {} or password dont seem to exist".format(
-                        username, email
-                    )
-                },
-                400,
-            )
 
+        if user_exist == False:
+            return {'message':'user does not exist'}
         if User.verify_hash(password, email) == True:
-            ac_token = create_access_token(identity=email)
-            
-            return (
-                {
-                    "message": "User successfully logged in",
-                    "status": "Success",
-                    "access_token": ac_token
-                    
-                },
-                200,
-            )
+            # ac_token = create_access_token(identity=email)
+            ac_token = create_access_token(identity=email, expires_delta = datetime.timedelta(hours=1))
+            return dict(
+                    message= 'User successfully logged in',
+                    status= 'Success',
+                    access_token= ac_token
+               )
         else:
-            return jsonify(
-                {"message": "no user by that email, please check your credentials"},
-                400
-            )
+            return jsonify({'message': 'no user by that email, please check your credentials'}), 400
         
         return jsonify({'message':'signin successful'}), 200
 
@@ -116,10 +95,16 @@ class Signin(Resource):
         data = request.get_json()
         email= data['email']
         return User().viewone(email)
+        
 
+class Logout(Resource):
+    '''logs the user out and destroys token'''
+    @jwt_required
     def delete(self):
         '''Logs the user out by balcklisting the token'''
-        access_token = get_raw_jwt()['access_token']
-        blacklist.add(access_token)
-        return make_response(jsonify({'message':'User logged out'}), 200)
+        blacklist = set()
+        print(get_raw_jwt())
+        jti = get_raw_jwt()['jti']
+        blacklist.add(jti)
+        return {'message':'User logged out'}, 200
         

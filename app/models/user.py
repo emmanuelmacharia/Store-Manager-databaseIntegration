@@ -36,7 +36,8 @@ class User:
         if result == None:
             return False
         else:
-            return True
+            # user = dict(result[0], username = result[1], email = result[2], password = result[3],  role = result[-1])
+            return {'User': '{}'.format(email)}
         cur.close()
 
     def ammend(self, email, admin_role=False):

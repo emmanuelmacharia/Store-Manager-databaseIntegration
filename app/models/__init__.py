@@ -2,7 +2,7 @@
 '''creates a connection with the database'''
 import os
 import psycopg2
-from .database import queries
+from .database import queries, deletes
 from instance.config import Configurations, Testing
 
 
@@ -40,7 +40,6 @@ def createTables():
 
 def droptables():
     '''deletes all the tables; should only be called when testing'''
-    from database import deletes
     testconn = dbconnect()
     cur = testconn.cursor()
     for deleter in deletes:
