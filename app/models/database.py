@@ -27,7 +27,10 @@ deluser = "DROP TABLE users"
 delproducts = "DROP TABLE products"
 delsales = "DROP TABLE sales"
 
+nonduplicate = "CREATE EXTENSION IF NOT EXISTS citext;"
 
-queries = [query1, query2, query3]
+alter = "ALTER TABLE products ALTER COLUMN productname TYPE citext;"
+
+queries = [query1, query2, query3, nonduplicate, alter]
 
 deletes = [deluser, delproducts, delsales]

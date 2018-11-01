@@ -20,14 +20,13 @@ def create_app(config_name):
     """Runs the entire appliation"""
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(app_configurations["development"])
-    os.getenv("DATABASE_URL")
     os.getenv("SECRET_KEY")
-    dbconnect()
-    createTables()
     app.config['JWT_BLACKLIST_ENABLED'] = True
     app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access']
     app.config['JWT_SECRET_KEY'] = os.getenv("SECRET_KEY")
     jwt = JWTManager(app)
+    with app.app_context():
+        createTables()
 
     @jwt.token_in_blacklist_loader
     def check_if_token_in_blacklist(decrypted_token):

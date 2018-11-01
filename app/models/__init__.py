@@ -3,30 +3,16 @@
 import os
 import psycopg2
 from .database import queries, deletes
-from instance.config import Configurations, Testing
+from instance.config import Configurations, Testing, Development
+from flask import current_app
 
 
 def dbconnect():
-    '''connects to the databse'''
-    environment = os.getenv('APP_SETTINGS')
-    try:
-        if environment == 'production' or environment == 'development':
-            conn = psycopg2.connect(dbname=Configurations.DBNAME,
-                                    host=Configurations.HOST,
-                                    port=Configurations.PORT,
-                                    user=Configurations.USER,
-                                    password=Configurations.PASSWORD)
-            return (conn)
-        else:
-            testconn = psycopg2.connect(dbname=Testing.DBNAME,
-                                        host=Configurations.HOST,
-                                        port=Configurations.PORT,
-                                        user=Configurations.USER,
-                                        password=Configurations.PASSWORD
-                                        )
-            return testconn
-    except Exception as e:
-        return ('failed to connect', e)
+    '''connects to the database'''
+    environment = os.getenv('TESTING_URL')
+    conn = psycopg2.connect(environment)
+    return (conn)
+
 
 conn = dbconnect()
 print(conn)

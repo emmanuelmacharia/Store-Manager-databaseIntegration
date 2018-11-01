@@ -65,11 +65,16 @@ class Product:
                 404,
             )
         else:
-            return (
-                [record[0], record[1], record[2],
-                    record[3], record[4], record[-1]],
-                200
-            )
+            record_format = {
+                "id": record[0],
+                "productname": record[1],
+                "desctription": record[2],
+                "category": record[3],
+                "quantity": record[4],
+                "price": record[5]
+            }
+            return {'message': 'product requested', 'products': record_format}, 200
+
 
     @staticmethod
     def ammend(productname, description, category, quantity, price):

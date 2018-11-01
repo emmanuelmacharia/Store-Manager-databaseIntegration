@@ -9,16 +9,20 @@ class Configurations():
     PORT = os.getenv('PORT') 
     USER = os.getenv('USER')
     PASSWORD = os.getenv('PASSWORD')
+    DBURL = os.getenv('DEVELOPMENT_URL')
 
 
 class Development(Configurations):
     DEBUG = True
+    DBNAME = os.getenv('DBNAME')
+    DBURL = os.getenv('DEVELOPMENT_URL')
 
 
 class Testing(Configurations):
     DEBUG = True
     TESTING = True
-    DBNAME = 'teststoremanagerdb'
+    # DBNAME = 'teststoremanagerdb'
+    # DBURL = os.getenv('TESTING_URL')
 
 
 class Production(Configurations):

@@ -28,18 +28,6 @@ api = Api(app)
 blacklist = set()
 
 
-# def admin_only(f):
-#     ''' Only allows the admin to make changes '''
-#     @wraps(f)
-#     def wrapper_function(*args, **kwargs):
-#         user = User(username, email, password).viewone(get_jwt_identity())
-#         if user.admin_role is False:
-#             return {'message': 'Unauthorized access, \
-#                     you must be an admin '}, 401
-#         return f(*args, **kwargs)
-#     return wrapper_function
-
-
 class Users(Resource):
     """defines the get-all,post, and delete user methods"""
 
@@ -49,7 +37,7 @@ class Users(Resource):
         for user in users:
             uservalue = {
                 'id': user[0],
-                'username': user[1], 
+                'username': user[1],
                 'email': user[2],
                 'password': user[3],
                 'admin_role': user[-1]
@@ -67,14 +55,20 @@ class Users(Resource):
         if result is True:
             hash = User.generate_hash(password)
         else:
-            return jsonify({"message":
-                            "please enter data in the right format"}), 400
+            return make_response(jsonify({'message': 'Invalid input'}), 400)
 
-        try:
-            User(username, email, hash).save()
-            return {"message": "new user created"}, 201
-        except Exception as e:
-            return {"message": ""}, e, 404
+        user_exist = User.viewone(email)
+        if user_exist:
+            return{
+                "message":
+                """Email exists,register with a different email, or sign in"""
+                }, 400
+        else:
+            try:
+                User(username, email, hash).save()
+                return {"message": "new user created"}, 201
+            except Exception as e:
+                return e, 404
 
     def delete(self):
         data = request.get_json()
@@ -105,7 +99,7 @@ class Signin(Resource):
             return {"message": "user does not exist"}
         if User.verify_hash(password, hash) is True:
             ac_token = create_access_token(
-                identity=email, expires_delta=datetime.timedelta(hours=90)
+                identity=email, expires_delta=datetime.timedelta(days=90)
             )
             return dict(
                 message="User successfully logged in",
