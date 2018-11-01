@@ -12,6 +12,11 @@ install:
 
 
 # command to run tests
+before sript:
+- psql -c "create database teststoremanagerdb;"-U postgres
+- psql -c "create user postgres;" -U postgres
+- psql -c "alter user postgres with password 'Permafrost';"-U postgres`
+
 script : 
 -  nosetests --exe -v --with-coverage --cover-package=app
 

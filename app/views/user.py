@@ -136,4 +136,4 @@ class Logout(Resource):
             blacklist.add(jti)
             return {"message": "User logged out"}, 200
         except Exception as e:
-            return {'message': 'No Authorization header provided'}, e, 400
+            return {'message': 'No Authorization header provided'}, e, 404
