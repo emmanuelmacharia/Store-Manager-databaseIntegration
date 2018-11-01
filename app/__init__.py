@@ -12,9 +12,6 @@ from .views.product import Products, SingleProduct
 from .views.user import Users, Signin, Logout, blacklist
 from .views.sale import Sales
 
-
-# v1 = Blueprint("v1", __name__, url_prefix="/api/v1")
-# api = Api(v1)
 v2 = Blueprint("v2", __name__, url_prefix="/api/v2")
 api = Api(v2)
 
@@ -27,16 +24,15 @@ def create_app(config_name):
     os.getenv("SECRET_KEY")
     dbconnect()
     createTables()
-    app.config['JWT_BLACKLIST_ENABLED']=True
-    app.config['JWT_BLACKLIST_TOKEN_CHECKS']=['access']
-    app.config['JWT_SECRET_KEY']=os.getenv("SECRET_KEY")
+    app.config['JWT_BLACKLIST_ENABLED'] = True
+    app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access']
+    app.config['JWT_SECRET_KEY'] = os.getenv("SECRET_KEY")
     jwt = JWTManager(app)
 
     @jwt.token_in_blacklist_loader
     def check_if_token_in_blacklist(decrypted_token):
         jti = decrypted_token['jti']
         return jti in blacklist
-   
 
     # ENDPOINTS FOR V2
     api.add_resource(Users, "/auth/signup")
@@ -44,8 +40,7 @@ def create_app(config_name):
     api.add_resource(Sales, "/sales")
     api.add_resource(Signin, "/auth/login")
     api.add_resource(SingleProduct, "/product/<int:id>")
-    api.add_resource(Logout, "/auth/logout" )
-
+    api.add_resource(Logout, "/auth/logout")
 
     app.register_blueprint(v2)
     return app

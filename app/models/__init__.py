@@ -11,15 +11,19 @@ def dbconnect():
     environment = os.getenv('APP_SETTINGS')
     try:
         if environment == 'production' or environment == 'development':
-            conn = psycopg2.connect(dbname=Configurations.DBNAME, 
-                                    host = Configurations.HOST, port = Configurations.PORT,  
-                                    user = Configurations.USER, password = Configurations.PASSWORD)
+            conn = psycopg2.connect(dbname=Configurations.DBNAME,
+                                    host=Configurations.HOST,
+                                    port=Configurations.PORT,
+                                    user=Configurations.USER,
+                                    password=Configurations.PASSWORD)
             return (conn)
-        else: 
+        else:
             testconn = psycopg2.connect(dbname=Testing.DBNAME,
-                                    host = Configurations.HOST, port = Configurations.PORT,  
-                                    user = Configurations.USER, password = Configurations.PASSWORD
-                                    )
+                                        host=Configurations.HOST,
+                                        port=Configurations.PORT,
+                                        user=Configurations.USER,
+                                        password=Configurations.PASSWORD
+                                        )
             return testconn
     except Exception as e:
         return ('failed to connect', e)
@@ -27,13 +31,14 @@ def dbconnect():
 conn = dbconnect()
 print(conn)
 
+
 def createTables():
     '''creates all the tables in the database'''
     conn = dbconnect()
     cur = conn.cursor()
 
     for query in queries:
-         cur.execute(query)
+        cur.execute(query)
     conn.commit()
     cur.close()
 

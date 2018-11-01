@@ -6,54 +6,65 @@ from passlib.hash import pbkdf2_sha256 as sha256
 from flask import Flask, jsonify, request
 from ..models import dbconnect
 
+conn = dbconnect()
+cur = conn.cursor()
+
 
 class User:
-    def save(self, username, email, hash, admin_role=False):
+    '''user models'''
+    def __init__(self, username, email, password, admin_role=False):
+        self.username = username
+        self.email = email
+        self.password = password
+        self.admin_role = admin_role
+
+    def serializer(self):
+        return dict(
+            username=self.username,
+            email=self.email,
+            password=self.password,
+            role=self.admin_role
+        )
+
+    def save(self):
         """takes the data input from the user and saves it into the database"""
-        conn = dbconnect()
-        cur = conn.cursor()
         query = (
-            "INSERT INTO users (username, email, password, admin_role) VALUES('%s', '%s', '%s', '%s');"
-            % (username, email, hash, admin_role)
+            """INSERT INTO users (username, email, password, admin_role)
+            VALUES('%s', '%s', '%s', '%s');"""
+            % (self.username, self.email, self.password, self.admin_role)
         )
         cur.execute(query)
         conn.commit()
-        cur.close()
 
-    def viewall(self):
+    @staticmethod
+    def viewall():
         """queries the database to view all users"""
-        conn = dbconnect()
-        cur = conn.cursor()
         cur.execute("SELECT * FROM users;")
-        cur.fetchall()
+        users = cur.fetchall()
         cur.close()
+        return users
 
-    def viewone(self, email):
-        conn = dbconnect()
-        cur = conn.cursor()
+    @staticmethod
+    def viewone(email):
         cur.execute("SELECT * FROM users WHERE email = '%s';" % (email))
         result = cur.fetchone()
-        if result == None:
+        if result is None:
             return False
         else:
-            # user = dict(result[0], username = result[1], email = result[2], password = result[3],  role = result[-1])
-            return {'User': '{}'.format(email)}
+            return {"User": "{}".format(email)}
         cur.close()
 
     def ammend(self, email, admin_role=False):
         """method that updates data in the database"""
-        conn = dbconnect()
-        cur = conn.cursor()
-        query = "UPDATE users SET (%s) WHERE email=(%s)" % (admin_role, email)
+        query = "UPDATE users SET (%s)\
+                WHERE email=(%s)" % (self.admin_role, self.email)
         cur.execute(query)
         conn.commit()
         cur.close()
 
     def delete(self, id):
         """method that deletes a record from the database"""
-        conn = dbconnect()
-        cur = conn.cursor()
-        query = "DELETE FROM users WHERE id=(%s);"%(id,)
+        query = "DELETE FROM users WHERE id=(%s);" % (id,)
         cur.execute(query)
         conn.commit()
         cur.close()
@@ -63,12 +74,5 @@ class User:
         return sha256.hash(password)
 
     @staticmethod
-    def verify_hash(password, email):
-        conn = dbconnect()
-        cur = conn.cursor()
-        query = "SELECT * FROM users WHERE email = '%s';" % (email)
-        cur.execute(query)
-        result = cur.fetchone()
-        cur.close()
-        hash = result[-2]
+    def verify_hash(password, hash):
         return sha256.verify(password, hash)
