@@ -3,16 +3,18 @@
 import os
 import psycopg2
 from .database import queries, deletes
-from instance.config import Configurations, Testing, Development
-from flask import current_app
+from instance.config import Configurations, Testing, app_configurations
 
 
 def dbconnect():
-    '''connects to the database'''
-    environment = os.getenv('TESTING_URL')
-    conn = psycopg2.connect(environment)
-    return (conn)
+    '''connects to the databse'''
+    environment = os.getenv('APP_SETTINGS')
+    if environment == 'testing':
+        conn = psycopg2.connect(Testing.DATABASE_URI)
+    else:
+        conn = psycopg2.connect(Configurations.DATABASE_URI)
 
+    return conn
 
 conn = dbconnect()
 print(conn)

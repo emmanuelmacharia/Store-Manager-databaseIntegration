@@ -62,7 +62,7 @@ class Product:
         if record is None:
             return (
                 {"message": "No product by that id found, review input"},
-                404,
+                404
             )
         else:
             record_format = {
@@ -94,6 +94,9 @@ class Product:
         """method that deletes a record from the database"""
         conn = dbconnect()
         cur = conn.cursor()
+        viewone(id)
+        if viewone.record is None:
+            return {'message': 'Product doesn\'t exist'}, 404
         query = "DELETE FROM products WHERE id = %s;" % (id,)
         cur.execute(query)
         conn.commit()

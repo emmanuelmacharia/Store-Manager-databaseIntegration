@@ -6,32 +6,32 @@ class Configurations():
     TESTING = False
     DBNAME = os.getenv('DBNAME')
     HOST = os.getenv('HOST')
-    PORT = os.getenv('PORT') 
+    PORT = os.getenv('PORT')
     USER = os.getenv('USER')
     PASSWORD = os.getenv('PASSWORD')
-    DBURL = os.getenv('DEVELOPMENT_URL')
+    DATABASE_URI = os.getenv('DATABASE_URI')
 
 
 class Development(Configurations):
+    '''development environment'''
     DEBUG = True
-    DBNAME = os.getenv('DBNAME')
-    DBURL = os.getenv('DEVELOPMENT_URL')
 
 
 class Testing(Configurations):
+    '''testing environment'''
     DEBUG = True
     TESTING = True
-    # DBNAME = 'teststoremanagerdb'
-    # DBURL = os.getenv('TESTING_URL')
+    DATABASE_URI = os.getenv('TESTDATABASE_URI') 
 
 
-class Production(Configurations):
-    DEBUG = False
-    TESTING = False
+# class Production(Configurations):
+#     '''production environment'''
+#     DEBUG = False
+#     TESTING = False
 
 
 app_configurations = {
     "development": Development,
     "testing": Testing,
-    "production": Production
+    # "production": Production
 }
