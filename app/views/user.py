@@ -19,7 +19,7 @@ from flask_jwt_extended import (
 
 
 from ..models.user import User
-from ..utils import user_valid
+from ..utils import Validator
 
 app = Flask(__name__)
 api = Api(app)
@@ -51,11 +51,20 @@ class Users(Resource):
         email = data["email"]
         password = data["password"]
 
-        result = user_valid(username, email, password)
-        if result is True:
-            hash = User.generate_hash(password)
+        validusername = Validator.username_valid(username)
+        validemail = Validator.email_valid(email)
+        validpassword = Validator.valid_password(password)
+        
+        if not validusername:
+            return {"message": "Username cannot be null"}, 400
+        elif validemail:
+            return {"message": "user must have a valid email"}, 400
+        elif validpassword:
+            return{
+                    "message": "user must have a valid password"
+                }, 400
         else:
-            return make_response(jsonify({'message': 'Invalid input'}), 400)
+            hash = User.generate_hash(password)
 
         user_exist = User.viewone(email)
         if user_exist:
@@ -87,10 +96,19 @@ class Signin(Resource):
         username = data["username"]
         email = data["email"]
         password = data["password"]
-
-        result = user_valid(username, email, password)
-
-        if result is True:
+        validusername = Validator.username_valid(username)
+        validemail = Validator.email_valid(email)
+        validpassword = Validator.valid_password(password)
+        
+        if not validusername:
+            return {"message": "Username cannot be null"}, 400
+        elif validemail:
+            return {"message": "user must have a valid email"}, 400
+        elif validpassword:
+            return{
+                    "message": "user must have a valid password"
+                }, 400
+        else:
             hash = User.generate_hash(password)
 
         user_exist = User.viewone(email)

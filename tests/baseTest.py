@@ -13,7 +13,7 @@ class BaseTest(unittest.TestCase):
     def setUp(self):
         '''creates the data required in the tests.
         also connects to the test database where the data will be stored'''
-        self.app = create_app('testing')
+        self.app = create_app('development')
         self.app.test_client()
         conn = dbconnect()
         cur = conn.cursor()
@@ -39,7 +39,7 @@ class BaseTest(unittest.TestCase):
         )
         return json.loads(tester.data.decode())["access_token"]
 
-    def tearDown(self):
-        '''Terminates connection to database, and cursor'''
-        droptables()
-        self.cur.close()
+    # def tearDown(self):
+    #     '''Terminates connection to database, and cursor'''
+    #     droptables()
+    #     self.cur.close()

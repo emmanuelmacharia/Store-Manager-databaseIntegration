@@ -43,12 +43,23 @@ class Product:
         conn = dbconnect()
         cur = conn.cursor()
         cur.execute("SELECT * FROM products;")
-        records = cur.fetchall()
+        return_records = cur.fetchall()
         cur.close()
-        all_products = []
-        for record in records:
-            all_products.append(record)
-        return all_products
+        records = []
+        for record in return_records:
+            record_format = {
+                'id': record[0],
+                'productname': record[1],
+                'description': record[2],
+                'category': record[3],
+                'quantity': record[4],
+                'price': record[-1]
+            }
+        records.append(record_format)
+        return {
+            'message': 'products successfully retrieved',
+            'products': records
+            }
 
     @staticmethod
     def viewone(id):
@@ -88,6 +99,24 @@ class Product:
            productname, description, category, quantity, price, productname
         ))
         conn.commit()
+
+    def get_by_price(self, productname):
+        '''Get single product by its price'''
+        conn = dbconnect()
+        cur.execute("SELECT * FROM products\
+                    WHERE productname = %s", (productname, ))
+        product = cur.fetchone()
+        return product[-1]
+
+    def get_quantity(self, productname):
+        '''get single produt's quantity'''
+        conn = dbconnect()
+        cur = conn.cursor()
+        cur.execute("""SELECT * FROM products
+        WHERE productname= %s""", (productname, ))
+        stock = cur.fetchone()
+        return stock[-2]
+
 
     @staticmethod
     def delete(id):

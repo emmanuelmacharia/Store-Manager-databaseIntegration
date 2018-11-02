@@ -2,19 +2,21 @@ import re
 from flask import jsonify
 
 
-def user_valid(username, email, password):
-    if username == "":
-        return {"message": "Username cannot be null"}
-    elif not re.search(r"(^[a-zA-Z0-9_.-]+@[a-zA-Z-]+\.[.a-zA-Z-]+$)", email):
-        return {"message": "user must have a valid email"}
-    elif len(password) < 6 and re.search("[a-zA-Z0-9]+", password) is not True:
-        return{
-                "message": """user must have a valid password
-                (at least 6 characters, with lowercase,
-                uppercase and integers)"""
-            }
-    else:
+class Validator:
+    '''validates the input from user'''
+    def username_valid(username):
+        '''vlidates the usename feild'''
+        if username == "":
+            return {"message": "Username cannot be null"}, 400
         return True
+
+    def email_valid(email):
+        '''vlidates the email feild'''
+        if not re.search(r"(^[a-zA-Z0-9_.-]+@[a-zA-Z-]+\.[.a-zA-Z-]+$)", email):
+            return {"message": "user must have a valid email"}
+
+    def valid_password(password):
+        pass
 
 
 def product_valid(productname, description, category, quantity, price):
