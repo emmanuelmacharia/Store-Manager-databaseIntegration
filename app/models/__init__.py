@@ -2,29 +2,22 @@
 '''creates a connection with the database'''
 import os
 import psycopg2
-from .database import queries
-from instance.config import Configurations, Testing
-
+from .database import queries, deletes
+from instance.config import Configurations, Testing, app_configurations
 
 
 def dbconnect():
     '''connects to the databse'''
     environment = os.getenv('APP_SETTINGS')
-    print(environment)
-    try:
-        if environment == 'production' or environment == 'development':
-            conn = psycopg2.connect(dbname=Configurations.DBNAME, 
-                                    host = Configurations.HOST, port = Configurations.PORT,  
-                                    user = Configurations.USER, password = Configurations.PASSWORD)
-            return (conn)
-        else: 
-            testconn = psycopg2.connect(dbname=Testing.DBNAME,
-                                    host = Configurations.HOST, port = Configurations.PORT,  
-                                    user = Configurations.USER, password = Configurations.PASSWORD
-                                    )
-            return testconn
-    except Exception as e:
-        return ('failed to connect', e)
+    if environment == 'testing':
+        conn = psycopg2.connect(Testing.DATABASE_URI)
+    else:
+        conn = psycopg2.connect(Configurations.DATABASE_URI)
+
+    return conn
+
+conn = dbconnect()
+print(conn)
 
 
 def createTables():
@@ -33,14 +26,13 @@ def createTables():
     cur = conn.cursor()
 
     for query in queries:
-         cur.execute(query)
+        cur.execute(query)
     conn.commit()
     cur.close()
 
 
 def droptables():
     '''deletes all the tables; should only be called when testing'''
-    from database import deletes
     testconn = dbconnect()
     cur = testconn.cursor()
     for deleter in deletes:

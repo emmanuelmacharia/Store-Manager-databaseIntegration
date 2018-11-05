@@ -1,7 +1,9 @@
-
-'''Endpoints for the user methods '''
+"""Endpoints for the user methods """
 
 import re
+import datetime
+
+from functools import wraps
 
 from flask import Flask, request, jsonify, make_response
 from flask_restful import Api, Resource
@@ -11,59 +13,83 @@ from flask_jwt_extended import (
     create_refresh_token,
     jwt_refresh_token_required,
     get_jwt_identity,
-    get_raw_jwt
+    get_raw_jwt,
+    JWTManager,
 )
 
+
 from ..models.user import User
-from ..utils import user_valid
+from ..utils import Validator
 
 app = Flask(__name__)
 api = Api(app)
 
+
 blacklist = set()
-@jwt.token_in_blacklist_loader
-def blacklist_token(token):
-    '''checks if the access_token is already blacklisted'''
-    access_token = decrypted_token['access_token']
-    return access_token in blacklist
 
 
 class Users(Resource):
     """defines the get-all,post, and delete user methods"""
-
+    @jwt_required
     def get(self):
-        return User.viewall(), 200
+        user = User.viewone(get_jwt_identity())
+        if user is not True:
+            return {'message': 'Not authorized. Only admins can access this'}
+        users = User.viewall()
+        all_users = []
+        for user in users:
+            uservalue = {
+                'id': user[0],
+                'username': user[1],
+                'email': user[2],
+                'password': user[3],
+                'admin_role': user[-1]
+            }
+        all_users.append(uservalue)
+        return {'users': all_users}, 200
 
     def post(self):
-        data = request.get_json(force=True)
+        user = User.viewone(get_jwt_identity())
+        if user is not True:
+            return {'message': 'Not authorized. Only admins can access this'}
+        data = request.get_json()
         username = data["username"]
         email = data["email"]
         password = data["password"]
 
-        result = user_valid(username, email, password)
-        if result == True:
-            hash = User.generate_hash(password)
+        validusername = Validator.username_valid(username)
+        validemail = Validator.email_valid(email)
+        validpassword = Validator.valid_password(password)
+        if not validusername:
+            return {"message": "Username cannot be null"}, 400
+        elif validemail:
+            return {"message": "user must have a valid email"}, 400
+        elif validpassword:
+            return {
+                    "message": "user must have a valid password"
+                }, 400
         else:
-            return "please enter data in the right format", 400
+            hash = User.generate_hash(password)
 
-        try:
-            new_user = User.save(username, email, hash, admin_role=False)
-            ac_token = create_access_token(identity=data["email"])
-            new_token = create_refresh_token(identity=data["email"])
-            return jsonify(
-                {   
-                    "message": "new user created",
-                },
-                201,
-            )
-        except Exception as e:
-            return {"message": "Hmmm...something here's afoot"}, e, 404
+        user_exist = User.viewone(email)
+        if user_exist:
+            return{
+                "message":
+                """Email exists,register with a different email, or sign in"""
+                }, 400
+        else:
+            try:
+                User(username, email, hash).save()
+                return {"message": "new user created"}, 201
+            except Exception as e:
+                return {'message': 'Something went wrong'}, 500
 
     def delete(self):
-        id = parser.add_argument("id", type=int, help="id must be an integer")
-        args = parser.parse_args()
-        result = Products()
-        result.delete(args)
+        user = User.viewone(get_jwt_identity())
+        if user is not True:
+            return {'message': 'Not authorized. Only admins can access this'}
+        result = User(username, email, password)
+        result.delete(id)
 
 
 class Signin(Resource):
@@ -75,49 +101,63 @@ class Signin(Resource):
         username = data["username"]
         email = data["email"]
         password = data["password"]
-
-        result = user_valid(username, email, password)
-
-        if result == True:
-            User.generate_hash(password)
+        validusername = Validator.username_valid(username)
+        validemail = Validator.email_valid(email)
+        validpassword = Validator.valid_password(password)
+        if not validusername:
+            return {"message": "Username cannot be null"}, 400
+        elif validemail:
+            return {"message": "user must have a valid email"}, 400
+        elif validpassword:
+            return{
+                    "message": "user must have a valid password"
+                }, 400
+        else:
+            hash = User.generate_hash(password)
 
         user_exist = User.viewone(email)
-        if user_exist == False:
+
+        if user_exist is False:
+            return {"message": "user does not exist"}
+        if User.verify_hash(password, hash) is True:
+            ac_token = create_access_token(
+                identity=email, expires_delta=datetime.timedelta(days=90)
+            )
+            return dict(
+                message="User successfully logged in",
+                status="Success",
+                access_token=ac_token,
+            )
+        else:
             return (
-                {
-                    "message": "Username, {}, email, {} or password dont seem to exist".format(
-                        username, email
-                    )
-                },
+                jsonify(
+                    {"message":
+                        "no user by that email, please check your credentials"}
+                ),
                 400,
             )
 
-        if User.verify_hash(password, email) == True:
-            ac_token = create_access_token(identity=email)
-            
-            return (
-                {
-                    "message": "User successfully logged in",
-                    "status": "Success",
-                    "access_token": ac_token
-                    
-                },
-                200,
-            )
-        else:
-            return jsonify(
-                {"message": "no user by that email, please check your credentials"},
-                400
-            )
-        
-        return jsonify({'message':'signin successful'}), 200
+        return jsonify({"message": "signin successful"}), 200
 
-    def get(self):
-        return User.viewone()
+    @jwt_required
+    def get(self, email):
+        """gets a user by id"""
+        user = User.viewone(get_jwt_identity())
+        if user is not True:
+            return {'message': 'Not authorized. Only admins can access this'}
+        return User(username, email, password).viewone(email)
 
-    def delete(self)
-        '''Logs the user out by balcklisting the token'''
-        access_token = get_raw_jwt()['access_token']
-        blacklist.add('access_token')
-        return make_response(jsonify({'message':'User logged out'}), 200)
-        
+
+class Logout(Resource):
+    """logs the user out and destroys token"""
+
+    @jwt_required
+    def post(self):
+        """Logs the user out by balcklisting the token"""
+        blacklist = set()
+        try:
+            jti = get_raw_jwt()["jti"]
+            blacklist.add(jti)
+            return {"message": "User logged out"}, 200
+        except Exception as e:
+            return {'message': 'No Authorization header provided'}, e, 404

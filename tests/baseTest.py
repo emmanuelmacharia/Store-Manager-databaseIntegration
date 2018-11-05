@@ -1,77 +1,45 @@
-
 import unittest
 from app import create_app
 import json
-from app.models import dbconnect, droptables
+from app.views.product import Products, SingleProduct
+from app.views.sale import Sales
+from app.views.user import Users, Signin, Logout
+from app.models import dbconnect, droptables, createTables
+from .data import *
 
-class BaseTestClient(unittest.TestCase):
+
+class BaseTest(unittest.TestCase):
     '''the base test configurations for the entire application'''
-    def __init__(self):
-        pass
-
     def setUp(self):
-        '''creates the data required in the tests. also connects to the test database where the data will be stored'''
-        dbconnect()
-        self.app = create_app('testing').test_client()
-
-    user_information = {
-        "username":"Spongebob",
-        "email": "spongebobsquarepants@bikinibottom.sea",
-        "password": "CrustyKr1abs"
-    }
-
-    test_valid_product = {
-        "name" : "hp",
-        "description" : "elite",
-        "category" : "computers",
-        "quantity" : 10,
-        "price" : 50000
-        }
-
-    test_empty_username= {
-        "username":"",
-        "email":"user@inlook.com",
-        "password": "fdkff5A"
-        }
-    test_empty_email = {
-        "username":"user",
-        "email":"",
-        "password": "fdkff5A"
-        }
-    test_empty_password = {
-        "username":"user",
-        "email":"solomarsha@outlook.com",
-        "password": ""
-        }
-    test_invalid_password = {
-        "username":"user",
-        "email":"solomarsha@outlook.com",
-        "password": "pass"
-        }
-    test_valid_input= {
-        "username":"user",
-        "email":"solomarsha@outlook.com",
-        "password": "pass1Word"
-        }
-    test_login_success = {
-        "username":"user",
-        "email":"solomarsha@outlook.com",
-        "password": "pass1Word"
-        }
-
-    
+        '''creates the data required in the tests.
+        also connects to the test database where the data will be stored'''
+        self.app = create_app('development')
+        self.app.test_client()
+        conn = dbconnect()
+        cur = conn.cursor()
+        createTables()
 
     def register(self):
-        '''registers the test client user'''
-        test_register = self.app.post('api/v1/register', data= json.dumps(
-                                        dict(user_information)),
-                                        content_type = 'application/json')
+        '''registers a new user'''
+        tester = self.app.post(
+            registration_url, data.json.dumps(
+                dict(
+                    user_information
+                )
+            ), content_type='application/json'
+        )
+        return 'signed up'
 
-        return json.loads(test_register.data.decode())["access_token"]
+    def login(self):
+        '''log the test user in'''
+        tester = self.app.post(
+            login_url, data=json.dumps(dict(
+                user_information
+            )), content_type='application/json'
+        )
+        return json.loads(tester.data.decode())["access_token"]
 
-    def signin(self):
-        '''signs the test client in so that we can run our tests'''
-        test_signin = self.app.post('api/v1/login', data = json.dumps(
-                                    dict(user_information)),
-                                    content_type='application/json')
-        return json.loads(test_signin.data.decode())["access_token"]
+    # def tearDown(self):
+    #     '''Terminates connection to database, and cursor'''
+    #     droptables()
+    #     self.cur.close()
