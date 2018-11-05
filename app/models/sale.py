@@ -1,4 +1,4 @@
-"""Handles all the product queries from the database"""
+"""Handles all the sales queries from the database"""
 
 import json
 from ..models import dbconnect

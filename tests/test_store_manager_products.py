@@ -50,8 +50,3 @@ class TestProducts(BaseTest):
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 401)
-
-    def test_cant_delete_product(self):
-        pass
-
-    

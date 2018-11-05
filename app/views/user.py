@@ -30,8 +30,11 @@ blacklist = set()
 
 class Users(Resource):
     """defines the get-all,post, and delete user methods"""
-
+    @jwt_required
     def get(self):
+        user = User.viewone(get_jwt_identity())
+        if user is not True:
+            return {'message': 'Not authorized. Only admins can access this'}
         users = User.viewall()
         all_users = []
         for user in users:
@@ -46,6 +49,9 @@ class Users(Resource):
         return {'users': all_users}, 200
 
     def post(self):
+        user = User.viewone(get_jwt_identity())
+        if user is not True:
+            return {'message': 'Not authorized. Only admins can access this'}
         data = request.get_json()
         username = data["username"]
         email = data["email"]
@@ -54,13 +60,12 @@ class Users(Resource):
         validusername = Validator.username_valid(username)
         validemail = Validator.email_valid(email)
         validpassword = Validator.valid_password(password)
-        
         if not validusername:
             return {"message": "Username cannot be null"}, 400
         elif validemail:
             return {"message": "user must have a valid email"}, 400
         elif validpassword:
-            return{
+            return {
                     "message": "user must have a valid password"
                 }, 400
         else:
@@ -77,12 +82,12 @@ class Users(Resource):
                 User(username, email, hash).save()
                 return {"message": "new user created"}, 201
             except Exception as e:
-                return e, 404
+                return {'message': 'Something went wrong'}, 500
 
     def delete(self):
-        data = request.get_json()
-        id = data["id"]
-
+        user = User.viewone(get_jwt_identity())
+        if user is not True:
+            return {'message': 'Not authorized. Only admins can access this'}
         result = User(username, email, password)
         result.delete(id)
 
@@ -99,7 +104,6 @@ class Signin(Resource):
         validusername = Validator.username_valid(username)
         validemail = Validator.email_valid(email)
         validpassword = Validator.valid_password(password)
-        
         if not validusername:
             return {"message": "Username cannot be null"}, 400
         elif validemail:
@@ -135,10 +139,12 @@ class Signin(Resource):
 
         return jsonify({"message": "signin successful"}), 200
 
+    @jwt_required
     def get(self, email):
         """gets a user by id"""
-        data = request.get_json()
-        email = data["email"]
+        user = User.viewone(get_jwt_identity())
+        if user is not True:
+            return {'message': 'Not authorized. Only admins can access this'}
         return User(username, email, password).viewone(email)
 
 

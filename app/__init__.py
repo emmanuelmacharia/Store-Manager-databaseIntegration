@@ -11,6 +11,8 @@ from instance.config import app_configurations
 from .views.product import Products, SingleProduct
 from .views.user import Users, Signin, Logout, blacklist
 from .views.sale import Sales
+from .models.user import User
+
 
 v2 = Blueprint("v2", __name__, url_prefix="/api/v2")
 api = Api(v2)
@@ -27,6 +29,11 @@ def create_app(config):
     jwt = JWTManager(app)
     dbconnect()
     createTables()
+    username = 'emmanuel macharia'
+    email = 'emmanuel@sote.com'
+    admin_role = True
+    password = '123Qwerty'
+    User.createadmin(username, email, password, admin_role)
 
     @jwt.token_in_blacklist_loader
     def check_if_token_in_blacklist(decrypted_token):

@@ -1,3 +1,4 @@
+""" Handles the Product views """
 import re
 
 from flask import Flask, request, jsonify, make_response
@@ -11,6 +12,7 @@ from flask_jwt_extended import (
 )
 
 from ..models.product import Product
+from ..models.user import User
 from ..models.__init__ import dbconnect
 
 app = Flask(__name__)
@@ -37,8 +39,11 @@ parser.add_argument(
 
 class Products(Resource):
     """defines the get, post, put and delete methods for products"""
-    @jwt_required
+    # @jwt_required
     def post(self):
+        # user = User.viewone(get_jwt_identity())
+        # if user is not True:
+        #     return {'message': 'Not authorized. Only admins can access this'}
         args = parser.parse_args()
         productname = args.get("productname")
         description = args.get("description")
@@ -50,6 +55,7 @@ class Products(Resource):
         cur.execute("""SELECT * FROM products
                     WHERE productname= %s """, (productname, ))
         dup = cur.fetchall()
+        print(dup)
         if len(dup) < 1:
             Product(productname, description,
                     category, quantity, price).save()
@@ -59,6 +65,9 @@ class Products(Resource):
 
     @jwt_required
     def put(self):
+        user = User.viewone(get_jwt_identity())
+        if user is not True:
+            return {'message': 'Not authorized. Only admins can access this'}
         args = parser.parse_args()
         productname = args.get("productname").strip()
         description = args.get("description")
@@ -96,4 +105,7 @@ class SingleProduct(Resource):
     @jwt_required
     def delete(self, id):
         """Allows a admin to delete a product from the inventory"""
+        user = User.viewone(get_jwt_identity())
+        if user is not True:
+            return {'message': 'Not authorized. Only admins can access this'}
         return Product.delete(id)

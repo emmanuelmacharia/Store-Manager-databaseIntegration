@@ -86,7 +86,6 @@ class Product:
             }
             return {'message': 'product requested', 'products': record_format}, 200
 
-
     @staticmethod
     def ammend(productname, description, category, quantity, price):
         """method that updates product data in the database"""
@@ -116,7 +115,6 @@ class Product:
         WHERE productname= %s""", (productname, ))
         stock = cur.fetchone()
         return stock[-2]
-
 
     @staticmethod
     def delete(id):

@@ -1,3 +1,4 @@
+"""Handles the sales view """
 import re
 import datetime
 
@@ -34,10 +35,13 @@ class Sales(Resource):
     """defines the endpoints for sales"""
     @jwt_required
     def get(self):
+        user = User.viewone(get_jwt_identity())
+        if user is not True:
+            return {'message': 'Not authorized. Only admins can access this'}
         all_sales = Sale.viewall(self)
         return all_sales
 
-    @jwt_required
+
     def post(self):
         """Allows an attendant to create a new sales record"""
         args = parser.parse_args()
@@ -57,11 +61,10 @@ class Sales(Resource):
                 },
                 404,
             )
-        attendant = User.viewone(get_jwt_identity())['User']
+        attendant = User.viewone(get_jwt_identity())
         print(attendant)
-        if not attendant:
-            return {'message': 'Error! Sale record must have an attedant'}, 401
-    
+        # if not attendant:
+        #     return {'message': 'Error! Sale record must have an attedant'}, 401
         stock = Product.get_quantity(self, productname)
         date_sold = datetime.datetime.now()
         price = Product.get_by_price(self, productname)
@@ -93,6 +96,9 @@ class Sales(Resource):
 
     @jwt_required
     def delete(self):
+        user = User.viewone(get_jwt_identity())
+        if user is not True:
+            return {'message': 'Not authorized. Only admins can access this'}
         args = parser.parse_args()
         productname = args.get("productname")
         conn = dbconnect()

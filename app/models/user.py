@@ -26,7 +26,21 @@ class User:
             role=self.admin_role
         )
 
-    def save(self):
+    def createadmin(username, email, password, admin_role=True):
+        '''creates an autoadmin role'''
+        conn = dbconnect()
+        cur = conn.cursor()
+        user = User.viewone(email)
+        if not user:
+            password = User.generate_hash(password)
+            cur.execute("""INSERT INTO users (username, email, password, admin_role)
+            VALUES('%s', '%s', '%s', '%s');"""
+                        % (username, email,
+                            password, admin_role))
+        conn.commit()
+        cur.close()
+
+    def save(self, admin_role=False):
         """takes the data input from the user and saves it into the database"""
         query = (
             """INSERT INTO users (username, email, password, admin_role)
